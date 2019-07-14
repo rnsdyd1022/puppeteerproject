@@ -4,6 +4,7 @@ const neworder = require("./neworder");
   try {
     await neworder.initialize();
     await neworder.login();
+    await neworder.processNeworder();
   } catch (err) {
     console.log(err);
   }
