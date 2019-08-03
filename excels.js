@@ -27,8 +27,8 @@ var nadia = {
     startingNum:801,
     newOrders:[]
 }
-
 var todayOrders = [];
+
 const combineFiles = () => {
     const files = fs.readdirSync(testfolder);
     console.log(files);
@@ -38,6 +38,7 @@ const combineFiles = () => {
 
     var newWB = xlsx.utils.book_new();
     for( let i = 0; i < files.length - 1; i++) {
+        
         var wb = xlsx.readFile(testfolder + files[i], {cellDates:true});
         console.log(wb.SheetNames);
 

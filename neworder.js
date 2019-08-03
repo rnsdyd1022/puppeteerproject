@@ -19,7 +19,7 @@ const self = {
   },
 
   login: async () => {
-    const username = accounts.id;
+    const username = accounts.fashionGoID;
     const password = accounts.password;
 
     var userNameInput = 'input[formcontrolname="username"]';
