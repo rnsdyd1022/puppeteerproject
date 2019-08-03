@@ -1,41 +1,36 @@
 const fs= require("fs");
 const testfolder = "../../Downloads/";
 const xlsx = require("xlsx");
-const accounts = require("./config/config");
 
-const cezanne = {
-    code: "1604",
-    startingNum: 1
+var cezanne = {
+    name: "cezanne",
+    startingNum: 1,
+    newOrders:[]
 };
-const styleinusa = {
-    code:"1459",
-    startingNum: 301
+var styleinusa = {
+    name: "styleinusa",
+    startingNum: 301,
+    newOrders:[]
 };
-const btween = {
-    code:"2108",
-    startingNum: 501
+var btween = {
+    name: "btween",
+    startingNum: 501,
+    newOrders:[]
 }
-const appleb = {
-    code:"2432",
-    startingNum:601
+var appleb = {
+    name: "appleb",
+    startingNum:601,
+    newOrders:[]
 }
-const nadia = {
-    code:"1428",
-    startingNum:801
+var nadia = {
+    name: "nadia",
+    startingNum:801,
+    newOrders:[]
 }
 
-// read the directory,store filenames to arr
-// and return array.
-const readDirectory = async (folder) => {
-    const files = await fs.readdirSync(folder);
-        files.forEach(file=>{
-            console.log(file);
-        });
-        return files;
-}
-  
+var todayOrders = [];
 const combineFiles = () => {
-   const files = fs.readdirSync(testfolder);
+    const files = fs.readdirSync(testfolder);
     console.log(files);
 
     const date = new Date().toISOString().slice(8, 10);
@@ -46,16 +41,16 @@ const combineFiles = () => {
         var wb = xlsx.readFile(testfolder + files[i], {cellDates:true});
         console.log(wb.SheetNames);
 
-        var ws = wb.Sheets[wb.SheetNames[0]];
+        var ws1 = wb.Sheets[wb.SheetNames[0]];
+        var ws2 = wb.Sheets[wb.SheetNames[1]];
+        var orders = xlsx.utils.sheet_to_json(ws1);
+        var orderDetails = xlsx.utils.sheet_to_json(ws2);
 
-        var orders = xlsx.utils.sheet_to_json(ws);
-        var po = orders[0].poNumber[0];
-
-        var comfirmNum = startingNum(po);
+        var targetChar = orders[0].poNumber[0];
+        var company = checkCompany(targetChar);
         
-        console.log(comfirmNum);
+        console.log(company.name);
 
-        
         var newOrders = orders.map((record)=> {
             delete record.payment;
             delete record.shipment;
@@ -71,41 +66,62 @@ const combineFiles = () => {
             delete record.shippingZipcode;
             delete record.shippingCountry;   
             delete record.fax; 
-            record.ComfirmDate = date + "=" + comfirmNum;
-            comfirmNum++;
+            record.ComfirmDate = date + "=" + company.startingNum;
+            company.startingNum++;
             return record;
         })
-        var newWS = xlsx.utils.json_to_sheet(newOrders);
-        xlsx.utils.book_append_sheet(newWB,newWS,"new");
-    //    console.log(newOrders);
+
+        var newOrderDetails = orderDetails.map((itemInfo)=> {
+            for(orderInfo of newOrders) {
+                if(itemInfo.orderId === orderInfo.orderId) {
+                    itemInfo.BoxNum = orderInfo.ComfirmDate;
+                }
+            }
+            delete itemInfo.orderDetailId;
+            delete itemInfo.orderId;
+            delete itemInfo.size;
+            delete itemInfo.pack;
+            delete itemInfo.subTotal;
+            delete itemInfo.stockAvailability;
+            return itemInfo;
+        })
+
+        for (order of newOrders) {
+        company.newOrders.push(order);
+        }
+
+        for (order of newOrderDetails) {
+            todayOrders.push(order);
+        }
+        
     }
-    xlsx.writeFile(newWB,"Over all po info.xlsx");
+    var accountsOrderInfo = [cezanne,styleinusa,btween,appleb,nadia];
+    for (account of accountsOrderInfo) {
+        var newWS = xlsx.utils.json_to_sheet(account.newOrders);
+        xlsx.utils.book_append_sheet(newWB,newWS,account.name);
+        console.log(company);
+    }
+    var todayOrderWS = xlsx.utils.json_to_sheet(todayOrders);
+    xlsx.utils.book_append_sheet(newWB, todayOrderWS,"Today Orders");
+    xlsx.writeFile(newWB,"Overall po info.xlsx");
 }
 
 
-const startingNum = (ab)=> {
-    var num = 0;
+const checkCompany = (ab)=> {
+    
     if(ab === "C") {
-        num = 1;
+        return cezanne;
     } else if ( ab === "O") {
-        num = 301
+        return styleinusa;
     } else if ( ab === "H") {
-        num = 501
+        return btween;
     } else if ( ab === "A") {
-        num = 601
+        return appleb;
     } else if ( ab === "N") {
-        num = 801
+        return nadia;
     }
 
     return num;
 }
-/* 
-(async () => {
-    try {
-       const files = await readDirectory(testfolder);
-    } catch (err) {
-      console.log(err);
-    }
-  })();
-*/
+
 combineFiles();
