@@ -43,16 +43,20 @@ const self = {
     const searchInput = await self.page.$(searchInputSelector);
     //check start;
     for (item of list) {
-      console.log(item);
+      console.log("NOW SEARCHING:");
+      console.log( item );
       await searchInput.click({clickCount: 3});
-      await sleep(2000);
+      await sleep(1000);
       self.page.type(searchInputSelector,item.STYLENUM);
 
       //do something...
-      await sleep(1000);
       var orders = await collectOrders();
       var modifiedOrders = await modifyStyNumOfOrders(orders);
-      
+      console.log(modifiedOrders);
+
+      await compare(item,modifiedOrders);
+      console.log("After compare:")
+      console.log(item);
     }
 
   }
@@ -75,11 +79,12 @@ const collectOrders = async () => {
     let order = {};
 
     var records = await row.$$("#dataTables-backorders2 > tbody > tr > td");
+    console.log("length of records " + records.length);
     if(records.length === 1) {
       let msg = records[0];
       let msgText = await self.page.evaluate(msg => msg.innerText, msg) ;
-       console.log(msgText);
-      continue;
+      console.log(msgText);
+      break;
     }
     let vender = records[1];
     let originalNum = records[2];
@@ -120,16 +125,15 @@ const modifyStyNumOfOrders = async (orders) => {
           st = st.slice(0,st.indexOf(target)).trim();
         }
       }
-      var isFirstDash = 0
-      for( let i = 0; i < st.length; i++ ) {
-        
-        if(st[i] ==='-') {
-          if(isFirstDash === 0) {
-            var subSt = st.subStr(0,i)
-          }
-        }
+      
+      stArr = st.split('-');
+      if(stArr.length === 1) {
+        st = stArr[0];
+      } else {
+      st = stArr[0] +'-'+ stArr[1];
+      order.originalNum = st;
       }
-
+      return order;
 
     } else {
       console.log("FASHION GO")
@@ -141,12 +145,33 @@ const modifyStyNumOfOrders = async (orders) => {
          order.SIZE = "R";
 
       } else if (st.indexOf("PLUS") > 0 ){
-
          order.SIZE = "P";
-         order.originalNum = st.slice(0,styleNum.indexOf("PLUS")).trim();
-
+         st = st.slice(0,st.indexOf("PLUS")).trim();
       }
+      st = st.substr(3);
+      stArr = st.split('-');
+      if(stArr.length === 1) {
+        st = stArr[0];
+      } else {
+      st = stArr[0] +'-'+ stArr[1];
+      order.originalNum = st;
+      }
+      return order;
     }
   })
+  return modifiedOrders;
+}
+
+const compare = async (stockItem, orders) => {
+  for (order of orders) {
+    if(stockItem.STYLENUM === order.originalNum && stockItem.COLOR === order.color){
+      stockItem.RESPOND = "CHECK";
+      
+    }
+    else{
+      stockItem.RESPOND = "No order found";
+    }
+    console.log(stockItem.STYLENUM + " ~~STATUS" + stockItem.RESPOND);
+  }
 }
 module.exports = self;
