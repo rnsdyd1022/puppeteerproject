@@ -87,6 +87,7 @@ const selectDisplayNum = async () => {
     "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > div > div > div.table-grid__right.align-mid > div > fg-per-page > div > div > select";
   await self.page.waitForSelector(selectNum);
   await self.page.select(selectNum, "2: Object");
+  await sleep (500);
   console.log("Display 50 orders");
 };
 const selectAll = async () => {

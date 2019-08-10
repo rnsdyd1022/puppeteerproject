@@ -46,8 +46,9 @@ const self = {
       console.log("NOW SEARCHING:");
       console.log( item );
       await searchInput.click({clickCount: 3});
+      await sleep(100);
+      await self.page.type(searchInputSelector,item.STYLENUM);
       await sleep(1000);
-      self.page.type(searchInputSelector,item.STYLENUM);
 
       //do something...
       var orders = await collectOrders();
@@ -58,6 +59,7 @@ const self = {
       console.log("After compare:")
       console.log(item);
     }
+    return list;
 
   }
 }
@@ -79,7 +81,7 @@ const collectOrders = async () => {
     let order = {};
 
     var records = await row.$$("#dataTables-backorders2 > tbody > tr > td");
-    console.log("length of records " + records.length);
+
     if(records.length === 1) {
       let msg = records[0];
       let msgText = await self.page.evaluate(msg => msg.innerText, msg) ;
@@ -92,11 +94,20 @@ const collectOrders = async () => {
     let color = records[4];
     let qty = records[5];
 
+
     let venderText = await self.page.evaluate(vender=> vender.innerText, vender);
+    console.log(venderText);
     let originalNumText = await self.page.evaluate(originalNum=> originalNum.innerText, originalNum);
+    console.log(originalNumText);
     let styNumText = await self.page.evaluate(styNum=> styNum.innerText, styNum);
+    console.log(styNumText);
+
     let colorText = await self.page.evaluate(color=> color.innerText, color);
+    console.log(colorText);
+
     let qtyText = await self.page.evaluate(qty=> qty.innerText, qty);
+    console.log(qtyText);
+
 
     order.vender = venderText;
     order.originalNum = originalNumText;
@@ -115,7 +126,6 @@ const modifyStyNumOfOrders = async (orders) => {
 
     //original# = "" -- LASHOWROOM
     if(order.originalNum === '') {
-      console.log("LA SHOWROOM")
       let st = order.styNum;
       var deletTargets = ["PLUS", "PLU","PL"];
       order.SIZE = "R";
@@ -136,8 +146,6 @@ const modifyStyNumOfOrders = async (orders) => {
       return order;
 
     } else {
-      console.log("FASHION GO")
-
      let st = order.originalNum;
      //FashionGO
       if ( st.indexOf("PLUS") < 0 ) {
@@ -164,7 +172,7 @@ const modifyStyNumOfOrders = async (orders) => {
 
 const compare = async (stockItem, orders) => {
   for (order of orders) {
-    if(stockItem.STYLENUM === order.originalNum && stockItem.COLOR === order.color){
+    if(stockItem.STYLENUM === order.originalNum && stockItem.COLOR === order.color && stockItem.SIZE ===stockItem.SIZE ){
       stockItem.RESPOND = "CHECK";
       
     }
