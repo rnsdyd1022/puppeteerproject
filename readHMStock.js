@@ -9,6 +9,7 @@ const checkStockHM = () => {
 
 
     var stockList = data.map(record => {
+    
         if(record.QUANTITY === 0) {
             delete record;
         }
@@ -24,7 +25,7 @@ const checkStockHM = () => {
         return record;
     })
    console.log(stockList);
-    return stockList;
+   return stockList;
 }
 
 module.exports = checkStockHM;

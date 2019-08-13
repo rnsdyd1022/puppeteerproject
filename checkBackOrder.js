@@ -1,9 +1,9 @@
 const backOrder = require("./backOrder");
-const stockHM = require("./StockHM");
+const readHMStock = require("./readHMStock");
 const xlsx = require('xlsx');
 
 var newWB = xlsx.utils.book_new();
-var checkList = stockHM();
+var checkList = readHMStock();
 (async () => {
   try {
     await backOrder.initialize();

@@ -48,8 +48,7 @@ const self = {
       await searchInput.click({clickCount: 3});
       await sleep(100);
       await self.page.type(searchInputSelector,item.STYLENUM);
-      await sleep(1000);
-
+      await sleep(800);
       //do something...
       var orders = await collectOrders();
       var modifiedOrders = await modifyStyNumOfOrders(orders);
@@ -96,17 +95,10 @@ const collectOrders = async () => {
 
 
     let venderText = await self.page.evaluate(vender=> vender.innerText, vender);
-    console.log(venderText);
     let originalNumText = await self.page.evaluate(originalNum=> originalNum.innerText, originalNum);
-    console.log(originalNumText);
     let styNumText = await self.page.evaluate(styNum=> styNum.innerText, styNum);
-    console.log(styNumText);
-
     let colorText = await self.page.evaluate(color=> color.innerText, color);
-    console.log(colorText);
-
     let qtyText = await self.page.evaluate(qty=> qty.innerText, qty);
-    console.log(qtyText);
 
 
     order.vender = venderText;
@@ -116,7 +108,6 @@ const collectOrders = async () => {
     order.qty = qtyText;
     orders.push(order);
   }
-  console.log(orders);
   return orders;
 }
 
@@ -171,15 +162,20 @@ const modifyStyNumOfOrders = async (orders) => {
 }
 
 const compare = async (stockItem, orders) => {
+  if (stockItem.RESPOND === "CHECK"){
+    return;
+  } 
   for (order of orders) {
-    if(stockItem.STYLENUM === order.originalNum && stockItem.COLOR === order.color && stockItem.SIZE ===stockItem.SIZE ){
+    if (stockItem.RESPOND === "CHECK"){
       stockItem.RESPOND = "CHECK";
-      
+    } else if(stockItem.STYLENUM === order.originalNum && stockItem.COLOR === order.color && stockItem.SIZE ===order.SIZE ){
+      stockItem.RESPOND = "CHECK";
+    } else if ( order === undefined) {
+      stockItem.RESPOND = "No order"
+    } else {
+      stockItem.RESPOND = "No order match"
     }
-    else{
-      stockItem.RESPOND = "No order found";
-    }
-    console.log(stockItem.STYLENUM + " ~~STATUS" + stockItem.RESPOND);
+    console.log(stockItem.STYLENUM + " " + stockItem.COLOR + " ~~STATUS " + stockItem.RESPOND);
   }
 }
 module.exports = self;

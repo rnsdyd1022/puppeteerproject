@@ -53,6 +53,12 @@ const combineFiles = () => {
         console.log(company.name);
 
         var newOrders = orders.map((record)=> {
+            delete record.discount;
+            delete record.couponAmount;
+            delete record.creditUsed;
+            delete record.additionaldiscount;
+            delete record.HandlingFee;
+            delete record.shippingCharge;
             delete record.payment;
             delete record.shipment;
             delete record.phoneNumber;
