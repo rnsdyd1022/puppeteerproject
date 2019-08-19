@@ -90,6 +90,7 @@ const combineFiles = () => {
             delete itemInfo.pack;
             delete itemInfo.subTotal;
             delete itemInfo.stockAvailability;
+            delete itemInfo.couponAmount;
             return itemInfo;
         })
 
