@@ -86,7 +86,6 @@ const combineFiles = () => {
             }
             delete itemInfo.orderDetailId;
             delete itemInfo.orderId;
-            delete itemInfo.size;
             delete itemInfo.pack;
             delete itemInfo.subTotal;
             delete itemInfo.stockAvailability;

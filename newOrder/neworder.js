@@ -71,7 +71,7 @@ const clickNeworders = async () => {
     "body > fg-root > div.fg-container > fg-secure-layout > fg-left-menu > ul > li:nth-child(2) > ul > li:nth-child(2) > ul > li:nth-child(1) > a"
   );
   await newOrderButton.click();
-  await sleep(500);
+  await sleep(3000);
 };
 
 const switchCompany = async code => {
@@ -88,10 +88,10 @@ const selectDisplayNum = async () => {
     "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > div > div > div.table-grid__right.align-mid > div > fg-per-page > div > div > select";
   await self.page.waitForSelector(selectNum);
   await self.page.select(selectNum, "2: Object").then(()=> console.log("Display 50 orders"));
-  await sleep (500);
+  await sleep (1000);
 };
 const selectAll = async () => {
-  await sleep(500);
+  await sleep(2000);
   var selectAll =
     "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > table > thead > tr > th.width-3p.text-left > div > label > input";
   await self.page.waitForSelector(selectAll);
@@ -102,7 +102,7 @@ const selectAll = async () => {
 const exportSheet = async () => {
   var exportPOButton =
     "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > div > div > div.table-grid__right.align-mid > button";
-    await self.page.focus(exportPOButton);
+  await self.page.focus(exportPOButton);
   await self.page.click(exportPOButton);
 
   var separateSheet =
@@ -120,6 +120,9 @@ const exportSheet = async () => {
 const updateBoxNum = async num => {
   const date = new Date().toISOString().slice(8, 10);
   var number = num;
+
+
+  //--------------------------------------------------------------
   await self.page.waitForSelector("table > tbody > tr > td:nth-child(5)");
   const orders = await self.page.$$("table > tbody > tr > td:nth-child(5)");
   console.log("Total order to process: " + orders.length);
@@ -135,8 +138,6 @@ const updateBoxNum = async num => {
     const order = orders[i];
     await order.click();
 
-    
-   
     await sleep(200)
     const companySelector = "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-order-detail > div:nth-child(3) > div.panel__body.panel__body--nopadding > div:nth-child(2) > div:nth-child(1) > ul > li:nth-child(1) > span.info-item__cont > strong"
     await self.page.waitForSelector(companySelector);
@@ -162,8 +163,10 @@ const updateBoxNum = async num => {
       "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-order-detail > div.table-grid.page-menu > div > button"
     );
     await saveButton.focus();
-   // await saveButton.click();
+    await saveButton.click();
     number++;
     await self.page.goBack();
-  }
+    //----------------------------------------------------------------------------------------
+  
+}
 };

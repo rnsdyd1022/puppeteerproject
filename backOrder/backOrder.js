@@ -54,11 +54,8 @@ const self = {
       //do something...
       var orders = await collectOrders();
       var modifiedOrders = await modifyStyNumOfOrders(orders);
-      console.log(modifiedOrders);
 
       await compare(item,modifiedOrders);
-      console.log("After compare:")
-      console.log(item);
     }
     return list;
 
@@ -149,17 +146,22 @@ const modifyStyNumOfOrders = async (orders) => {
          order.SIZE = "P";
          st = st.slice(0,st.indexOf("PLUS")).trim();
       }
+      //check RCH
+      //st = st.substr(4);
+      //check Heimish
       st = st.substr(3);
       stArr = st.split('-');
       if(stArr.length === 1) {
         st = stArr[0];
+        order.originalNum = st;
       } else {
-      st = stArr[0] +'-'+ stArr[1];
-      order.originalNum = st;
+        st = stArr[0] +'-'+ stArr[1];
+        order.originalNum = st;
       }
       return order;
     }
   })
+  console.log(modifiedOrders);
   return modifiedOrders;
 }
 
