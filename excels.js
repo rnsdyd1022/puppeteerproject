@@ -5,27 +5,32 @@ const xlsx = require("xlsx");
 var cezanne = {
     name: "cezanne",
     startingNum: 1,
-    newOrders:[]
+    newOrders:[],
+    newOrdersDetail:[]
 };
 var styleinusa = {
     name: "styleinusa",
     startingNum: 301,
-    newOrders:[]
+    newOrders:[],
+    newOrdersDetail:[]
 };
 var btween = {
     name: "btween",
     startingNum: 501,
-    newOrders:[]
+    newOrders:[],
+    newOrdersDetail:[]
 }
 var appleb = {
     name: "appleb",
     startingNum:601,
-    newOrders:[]
+    newOrders:[],
+    newOrdersDetail:[]
 }
 var nadia = {
     name: "nadia",
     startingNum:801,
-    newOrders:[]
+    newOrders:[],
+    newOrdersDetail:[]
 }
 var todayOrders = [];
 
@@ -40,7 +45,6 @@ const combineFiles = () => {
     for( let i = 0; i < files.length - 1; i++) {
         
         var wb = xlsx.readFile(testfolder + files[i], {cellDates:true});
-        console.log(wb.SheetNames);
 
         var ws1 = wb.Sheets[wb.SheetNames[0]];
         var ws2 = wb.Sheets[wb.SheetNames[1]];
@@ -99,14 +103,22 @@ const combineFiles = () => {
 
         for (order of newOrderDetails) {
             todayOrders.push(order);
+            company.newOrdersDetail.push(order);
         }
         
     }
+    console.log("read finish");
     var accountsOrderInfo = [cezanne,styleinusa,btween,appleb,nadia];
     for (account of accountsOrderInfo) {
-        var newWS = xlsx.utils.json_to_sheet(account.newOrders);
-        xlsx.utils.book_append_sheet(newWB,newWS,account.name);
-        console.log(company);
+        console.log(account.name);
+
+        var newOrderWS = xlsx.utils.json_to_sheet(account.newOrders);
+        xlsx.utils.book_append_sheet(newWB,newOrderWS,account.name);
+        
+       var newOrderPackingWS = xlsx.utils.json_to_sheet(account.newOrdersDetail);
+       let sheetName = account.name + "PackingList";
+       xlsx.utils.book_append_sheet(newWB,newOrderPackingWS, sheetName);
+//console.log(account.name);
     }
     var todayOrderWS = xlsx.utils.json_to_sheet(todayOrders);
     xlsx.utils.book_append_sheet(newWB, todayOrderWS,"Today Orders");
