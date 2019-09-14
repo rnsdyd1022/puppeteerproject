@@ -87,7 +87,7 @@ const selectDisplayNum = async () => {
   var selectNum =
     "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > div > div > div.table-grid__right.align-mid > div > fg-per-page > div > div > select";
   await self.page.waitForSelector(selectNum);
-  await self.page.select(selectNum, "0: Object").then(()=> console.log("Display 50 orders"));
+  await self.page.select(selectNum, "1: Object").then(()=> console.log("Display 50 orders"));
   await sleep (1000);
 };
 const selectAll = async () => {
@@ -95,8 +95,7 @@ const selectAll = async () => {
   var selectAll =
     "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > table > thead > tr > th.width-3p.text-left > div > label > input";
   await self.page.waitForSelector(selectAll);
-  await self.page.click(selectAll);
-  console.log("Select All new orders");
+  await self.page.click(selectAll).then(()=>console.log("Select All new orders"));
 };
 
 const exportSheet = async () => {
@@ -137,22 +136,23 @@ const updateBoxNum = async num => {
     var pageNum = page.toString();
     await pageInput.type(pageNum);
     var goButton = await self.page.$("body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-orders > div:nth-child(4) > div > fg-order-list > div.panel__body.panel__body--nopadding.is-active > div > div > div.table-grid__center.align-mid.width-40p > fg-pagination > ul > li.pagination__numbers > div > div.table-grid__right.align-mid > button");
-    await goButton.click();
-
+    await goButton.click().then(console.log("click go"));
+    await sleep(1000);
   //--------------------------------------------------------------
   await self.page.waitForSelector("table > tbody > tr > td:nth-child(5)");
-  const orders = await self.page.$$("table > tbody > tr > td:nth-child(5)");
+  var orders = await self.page.$$("table > tbody > tr > td:nth-child(5)");
   console.log("Total order to process: " + orders.length);
   for (let i = orders.length - 1; i >= 0; i--) {
+    
+    await self.page.waitForSelector("table > tbody > tr > td:nth-child(5) > a").then(()=> console.log("1"));
 
-    await self.page.waitForSelector("table > tbody > tr > td:nth-child(5) > a");
-
-    const orders = await self.page.$$(
+    orders = await self.page.$$(
       "table > tbody > tr > td:nth-child(5) > a"
-    );
-
+    ).then(()=>console.log(orders.length));
+    console.log(orders);
     await sleep(500);
-    const order = orders[i];
+    var order = orders[i];
+    console.length(order);
     await order.click();
 
     await sleep(200)
