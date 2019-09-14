@@ -35,7 +35,7 @@ const self = {
     backOrderSelector = "#page-wrapper > div:nth-child(3) > div:nth-child(1) > div > a > div > div";
     pendingButtonSelector = "#page-wrapper > div:nth-child(3) > div:nth-child(2) > div > a > div > div";
     await self.page.waitForSelector("div.clearfix");
-    var button = await self.page.$(pendingButtonSelector);
+    var button = await self.page.$(backOrderSelector);
     await button.click();
 
     await displayHundred();
@@ -146,11 +146,21 @@ const modifyStyNumOfOrders = async (orders) => {
          order.SIZE = "P";
          st = st.slice(0,st.indexOf("PLUS")).trim();
       }
+      if( st.indexOf(" ") > 0 ) {
+        st = st.slice(0,st.indexOf(" ")).trim();
+      }
+      if( st.indexOf("IN") > 0) {
+        st = st.slice(0,st.indexOf("IN")).trim();
+      }
+     
       //check RCH
       //st = st.substr(4);
       //check Heimish
       st = st.substr(3);
       stArr = st.split('-');
+      stArr = stArr.filter((el)=> {
+        return el != "";
+      })
       if(stArr.length === 1) {
         st = stArr[0];
         order.originalNum = st;
