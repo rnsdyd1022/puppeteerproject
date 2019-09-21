@@ -34,8 +34,15 @@ const self = {
   search: async (list) => {
     backOrderSelector = "#page-wrapper > div:nth-child(3) > div:nth-child(1) > div > a > div > div";
     pendingButtonSelector = "#page-wrapper > div:nth-child(3) > div:nth-child(2) > div > a > div > div";
+
+    heimishBackOrderSelector = "#page-wrapper > div:nth-child(7) > div:nth-child(1) > div > a > div > div";
+    heimishPendingSelector = "#page-wrapper > div:nth-child(7) > div:nth-child(2) > div > a > div > div";
+
+    rachealBackOrderSelector = "#page-wrapper > div:nth-child(5) > div:nth-child(1) > div > a > div > div";
+    rachealPendingSelector = "#page-wrapper > div:nth-child(5) > div:nth-child(2) > div > a > div > div";
+
     await self.page.waitForSelector("div.clearfix");
-    var button = await self.page.$(backOrderSelector);
+    var button = await self.page.$(heimishBackOrderSelector);
     await button.click();
 
     await displayHundred();
@@ -121,12 +128,15 @@ const modifyStyNumOfOrders = async (orders) => {
       order.SIZE = "R";
       for (target of deletTargets) {
         if( st.indexOf(target) > 0 ) {
-          order.SIZE = "P"
+          order.SIZE = "PLUS"
           st = st.slice(0,st.indexOf(target)).trim();
         }
       }
       
       stArr = st.split('-');
+      stArr = stArr.filter((el)=> {
+        return el != "";
+      })
       if(stArr.length === 1) {
         st = stArr[0];
       } else {
@@ -143,7 +153,7 @@ const modifyStyNumOfOrders = async (orders) => {
          order.SIZE = "R";
 
       } else if (st.indexOf("PLUS") > 0 ){
-         order.SIZE = "P";
+         order.SIZE = "PLUS";
          st = st.slice(0,st.indexOf("PLUS")).trim();
       }
       if( st.indexOf(" ") > 0 ) {
@@ -152,11 +162,16 @@ const modifyStyNumOfOrders = async (orders) => {
       if( st.indexOf("IN") > 0) {
         st = st.slice(0,st.indexOf("IN")).trim();
       }
+      if( st.indexOf("CUT") > 0) {
+        st = st.slice(0,st.indexOf("CUT")).trim();
+      }
+      
      
-      //check RCH
+      //check USA RCH
       //st = st.substr(4);
-      //check Heimish
-      st = st.substr(3);
+      //check USA Heimish
+      //st = st.substr(3);
+      //CHECK HEIMISH
       stArr = st.split('-');
       stArr = stArr.filter((el)=> {
         return el != "";

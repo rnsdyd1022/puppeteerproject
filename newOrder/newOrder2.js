@@ -148,11 +148,9 @@ const updateBoxNum = async num => {
 
     orders = await self.page.$$(
       "table > tbody > tr > td:nth-child(5) > a"
-    ).then(()=>console.log(orders.length));
-    console.log(orders);
+    ).then(()=>console.log(orders[i]));
     await sleep(500);
-    var order = orders[i];
-    console.length(order);
+   var order = orders[i];
     await order.click();
 
     await sleep(200)

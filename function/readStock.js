@@ -10,17 +10,17 @@ const readStock = () => {
 
     var stockList = data.map(record => {
     
-        if(record.QUANTITY === 0) {
-            delete record;
-        }
+       // if(record.QUANTITY === 0) {
+       //     delete record;
+       // }
         
         var styleNum = record.STYLENUM;
         if (styleNum.indexOf("PLUS") < 0 ) {
             record.SIZE = "R";
         }
         else if(styleNum.indexOf("PLUS") > 0 ){
-            record.SIZE = "P";
-            record.STYLENUM = styleNum.slice(0,styleNum.indexOf("PLUS")-1);
+            record.SIZE = "PLUS";
+            record.STYLENUM = styleNum.slice(0,styleNum.indexOf("PLUS")).trim();
         }
         return record;
     })
