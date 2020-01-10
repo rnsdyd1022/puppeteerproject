@@ -15,6 +15,7 @@ const readStock = () => {
        // }
         
         var styleNum = record.STYLENUM;
+        console.log(styleNum);
         if (styleNum.indexOf("PLUS") < 0 ) {
             record.SIZE = "R";
         }

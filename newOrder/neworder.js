@@ -45,7 +45,7 @@ const self = {
       await selectDisplayNum();
       await selectAll();
       await exportSheet();
-      await updateBoxNum(account.startingNum);
+      await updateBoxNum(account);
     }
   }
 };
@@ -117,9 +117,9 @@ const exportSheet = async () => {
   console.log("Export Sheet");
 };
 
-const updateBoxNum = async num => {
+const updateBoxNum = async company => {
   const date = new Date().toISOString().slice(8, 10);
-  var number = num;
+  var number = company.startingNum;
 
 
   //--------------------------------------------------------------
@@ -166,7 +166,11 @@ const updateBoxNum = async num => {
     await saveButton.click();
     number++;
     await self.page.goBack();
-    //----------------------------------------------------------------------------------------
-  
-}
+    //---------------------------------------------------------------------------------------  
+  } 
+
+  var testNum = number % 100;
+  if (testNum !== orders.length) {
+    console.log("the boxnumber is incorrect");
+  }
 };

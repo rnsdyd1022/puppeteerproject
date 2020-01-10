@@ -8,13 +8,18 @@ const self = {
 
   initialize: async () => {
     self.browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       timeout: 0
     });
 
     self.page = await self.browser.newPage();
     await self.page.setViewport({ width: 1366, height: 768}); 
     await self.page.goto("http://styleinusa.net/login");
+  },
+
+  end: async () =>{
+    await self.page.close();
+    await self.browser.close();
   },
 
   login: async () => {
@@ -42,7 +47,7 @@ const self = {
     rachealPendingSelector = "#page-wrapper > div:nth-child(5) > div:nth-child(2) > div > a > div > div";
 
     await self.page.waitForSelector("div.clearfix");
-    var button = await self.page.$(heimishBackOrderSelector);
+    var button = await self.page.$(backOrderSelector);
     await button.click();
 
     await displayHundred();
@@ -57,7 +62,7 @@ const self = {
       await searchInput.click({clickCount: 3});
       await sleep(100);
       await self.page.type(searchInputSelector,item.STYLENUM);
-      await sleep(800);
+      await sleep(1000);
       //do something...
       var orders = await collectOrders();
       var modifiedOrders = await modifyStyNumOfOrders(orders);
@@ -132,8 +137,23 @@ const modifyStyNumOfOrders = async (orders) => {
           st = st.slice(0,st.indexOf(target)).trim();
         }
       }
+      if( st.indexOf(" ") > 0 ) {
+        st = st.slice(0,st.indexOf(" ")).trim();
+      }
+      if( st.indexOf("IN") > 0) {
+        st = st.slice(0,st.indexOf("IN")).trim();
+      }
+      if( st.indexOf("CUT") > 0) {
+        st = st.slice(0,st.indexOf("CUT")).trim();
+      }
+      if( st.indexOf("_") > 0 ) {
+        st = st.slice(0,st.indexOf("_")).trim();
+      }
       
       stArr = st.split('-');
+      if (stArr[0] == "BL" || stArr[0] == "RCH") {
+        delete stArr[0];
+      }
       stArr = stArr.filter((el)=> {
         return el != "";
       })
@@ -165,14 +185,15 @@ const modifyStyNumOfOrders = async (orders) => {
       if( st.indexOf("CUT") > 0) {
         st = st.slice(0,st.indexOf("CUT")).trim();
       }
-      
+      if( st.indexOf("_") > 0 ) {
+        st = st.slice(0,st.indexOf("_")).trim();
+      }
      
-      //check USA RCH
-      //st = st.substr(4);
-      //check USA Heimish
-      //st = st.substr(3);
-      //CHECK HEIMISH
+    
       stArr = st.split('-');
+      if (stArr[0] == "BL" || stArr[0] == "RCH") {
+        delete stArr[0];
+      }
       stArr = stArr.filter((el)=> {
         return el != "";
       })

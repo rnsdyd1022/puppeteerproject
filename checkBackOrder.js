@@ -12,6 +12,7 @@ var checkList = readStock();
     var newListWS = xlsx.utils.json_to_sheet(newList);
     xlsx.utils.book_append_sheet(newWB, newListWS, "Stock Check Status");
     xlsx.writeFile(newWB,'StockCheck_Status.xlsx')
+    await backOrder.end().then(console.log("Backorder Check completed"));
   } catch (err) {
     console.log(err);
   }
