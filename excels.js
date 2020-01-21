@@ -77,7 +77,13 @@ const combineFiles = () => {
             delete record.shippingZipcode;
             delete record.shippingCountry;   
             delete record.fax; 
-            record.ComfirmDate = date + "=" + company.startingNum;
+            let BoxNum = company.startingNum;
+            
+            if(BoxNum < 10) {
+                BoxNum = addZeroToBoxNum(BoxNum)
+            }
+            console.log(BoxNum);
+            record.ComfirmDate = date + "=" + BoxNum;
             company.startingNum++;
             return record;
         })
@@ -143,4 +149,8 @@ const checkCompany = (ab)=> {
     return num;
 }
 
+const addZeroToBoxNum = (startingNum) => {
+    return ("0" + startingNum);
+
+}
 combineFiles();

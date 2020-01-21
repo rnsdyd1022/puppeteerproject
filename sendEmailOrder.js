@@ -25,7 +25,14 @@ var main = () => {
     };
 
 
-    send(emailList, mailOptions);
+    send(emailList, mailOptions,(err,info)=>{
+        if(err){
+            console.log(err)
+        }else {
+            console.log("done");
+        }
+    });
+
 
 
 }
@@ -41,10 +48,9 @@ var send = (list, mailOptions) => {
 
     var emailNotSent = [];
     
-    list.forEach(email => {
+    for(email of list) {
         setTimeout(() => {
             let code = email.CODE;
-
             console.log(code);
             if (email.html.length !== 0) {
                 (mailOptions.to = "rnsdyd1022@gmail.com"), (mailOptions.html =
@@ -61,11 +67,11 @@ var send = (list, mailOptions) => {
                     }
                 });
             }
-        }, 2000)
-    })
+        }, 5000)
+    }
 
    
-   console.log(emailNotSent);
+   return emailNotSent;
 }
 
 main();
