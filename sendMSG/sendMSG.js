@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 const accounts = require("../config/config");
 const sleep = require("../function/sleep");
+const clipboardy = require("clipboardy");
 
 const self = {
   broswer: null,
@@ -76,6 +77,9 @@ const self = {
   },
 
   send: async (msg, files) => {
+    //copy msgbody to clipboard
+    await clipboardy.writeSync(msg[1]);
+
     var pageSelector =
       "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-customer > div.table-grid.fixed.search-result-bottom > div.table-grid__center > fg-pagination > ul > li.pagination__numbers > div > div.table-grid__center.align-mid > div";
     await self.page.waitForSelector(pageSelector);
@@ -85,7 +89,9 @@ const self = {
       ps => parseInt(ps.innerText.substring(3)),
       ps
     );
-    for (let page = pages; page > 0; page--) {
+    var messageSent = 0;
+
+    for (let page = 60; page > 0; page--) {
       console.log(page);
       var pageInputSelector =
         "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-customer > div.table-grid.fixed.search-result-bottom > div.table-grid__center > fg-pagination > ul > li.pagination__numbers > div > div.table-grid__left.align-mid > div > input";
@@ -141,58 +147,57 @@ const self = {
           "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-customer > div:nth-child(8) > fg-message-compose-modal > div > div.modal-dialog.large > div > div.panel__body > div.fieldset > div:nth-child(3) > div.input-row__value > div.input-txt.width-350 > input.ng-untouched.ng-pristine.ng-valid";
         var titleInput = await self.page.$(titleSelector);
         await titleInput.type(msg[0]);
+        sleep(500);
         // type msg body
         var msgBodySelector =
           "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-customer > div:nth-child(8) > fg-message-compose-modal > div > div.modal-dialog.large > div > div.panel__body > div.fieldset > div:nth-child(4) > div.input-row__value > textarea";
-        var msgBodyInput = await self.page.$(msgBodySelector);
-        await msgBodyInput.type(msg[1]);
+        await self.page.click(msgBodySelector);
+        await sleep(200);
+        await paste();
+        //doesnt' work
+        // await self.page.waitForSelector(msgBodySelector);
+        // await setMsgBody(msgBodySelector, msg[1]);
+        //takes too long
+        //var msgBodyInput = await self.page.$(msgBodySelector);
+        // await msgBodyInput.type(msg[1]);
 
         //upload linesheet
         var attachFileSelector = "#fileForm1 > input[type=file]";
         var attach = await self.page.$(attachFileSelector);
         await attach.uploadFile(files);
 
-        await sleep(5000);
+        await sleep(200);
         const closeSelector =
           "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-customer > div:nth-child(8) > fg-message-compose-modal > div > div.modal-dialog.large > div > div.panel__header > div > div.table-grid__right.align-mid > i";
 
         const sendButtonSelector =
           "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-customer > div:nth-child(8) > fg-message-compose-modal > div > div.modal-dialog.large > div > div.panel__body > div.fieldset > div.text-right > button.btn.btn-blue.btn--min-width";
         const sendButton = await self.page.$(sendButtonSelector);
-        await sendButton.click();
+        await sendButton.click().then(() => {
+          messageSent++;
+          console.log(`Send to ${companyName}\n${messageSent}`);
+        });
         await sleep(1000);
-        // await self.page.waitForSelector(closeSelector);
-        // const closeButton = await self.page.$(closeSelector);
-        // await closeButton.click().then(() => {
-        //   messageSent++;
-        //   console.log(`Send to ${companyName}\n${messageSent}`);
-        // });
-        // const textArea =
-        //   "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-order-detail > div:nth-child(4) > div.panel__body.panel__body--nopadding > div.order-table__container > div > div > div.table-grid__center.summary-block__container.width-29p > div > textarea";
-        // await self.page.waitForSelector(textArea);
-        // const boxNumber = "Joe" + date + "=" + number + "\n";
-        // const msg = companyName + ": " + boxNumber;
-
-        // console.log(msg);
-
-        // await self.page.waitForSelector(textArea);
-        // await self.page.focus(textArea);
-        // var textInput = await self.page.$(textArea);
-        // await textInput.type(boxNumber);
-
-        // await self.page.waitForSelector(
-        //   "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-order-detail > div.table-grid.page-menu > div > button"
-        // );
-        // var saveButton = await self.page.$(
-        //   "body > fg-root > div.fg-container > fg-secure-layout > div > div.fg-content > fg-order-detail > div.table-grid.page-menu > div > button"
-        // );
-        // await saveButton.focus();
-        // await saveButton.click();
-        // number++;
-        // await self.page.goBack();
-        //----------------------------------------------------------------------------------------
+        await self.page.waitForSelector(closeSelector);
+        const closeButton = await self.page.$(closeSelector);
+        await closeButton.click();
       }
     }
   }
 };
 module.exports = self;
+
+const setMsgBody = async (selector, text) => {
+  await self.page.evaluate(
+    data => {
+      return (document.querySelector(data.selector).value = data.text);
+    },
+    { selector, text }
+  );
+};
+
+const paste = async () => {
+  await self.page.keyboard.down("Control");
+  await self.page.keyboard.press("KeyV");
+  await self.page.keyboard.up("Control");
+};

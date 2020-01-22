@@ -40,13 +40,18 @@ const self = {
     await button.click();
   },
   processNeworder: async () => {
-    await clickAllorders();
-
+    //await clickAllorders();
+    await self.page.waitForNavigation(
+      "body > fg-root > div.fg-container > fg-secure-layout > fg-left-menu > ul > li:nth-child(2) > ul > li:nth-child(2) > a > div"
+    );
+    await self.page.goto(
+      "https://vendoradmin.fashiongo.net/#/order/orders/new"
+    );
     const accountsinfo = accounts.info;
     var totalOrders;
     for (account of accountsinfo) {
       await switchCompany(account.code);
-      await clickNeworders();
+      //await clickNeworders();
       await selectDisplayNum();
       await updateBoxNum(account.startingNum);
     }
