@@ -191,6 +191,9 @@ const modifyStyNumOfOrders = async orders => {
       if (st.indexOf("CUT") > 0) {
         st = st.slice(0, st.indexOf("CUT")).trim();
       }
+      if (st.indexOf("SHOW") > 0) {
+        st = st.slice(0, st.indexOf("SHOW")).trim();
+      }
       if (st.indexOf("_") > 0) {
         st = st.slice(0, st.indexOf("_")).trim();
       }
