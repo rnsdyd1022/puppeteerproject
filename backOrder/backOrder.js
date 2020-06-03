@@ -8,8 +8,8 @@ const self = {
 
   initialize: async () => {
     self.browser = await puppeteer.launch({
-      headless: true,
-      timeout: 0
+      headless: false,
+      timeout: 0,
     });
 
     self.page = await self.browser.newPage();
@@ -41,17 +41,17 @@ const self = {
       "#page-wrapper > div:nth-child(3) > div:nth-child(1) > div > a > div > div";
     pendingButtonSelector =
       "#page-wrapper > div:nth-child(3) > div:nth-child(2) > div > a > div > div";
-
+    /*
     heimishBackOrderSelector =
       "#page-wrapper > div:nth-child(7) > div:nth-child(1) > div > a > div > div";
     heimishPendingSelector =
-      "#page-wrapper > div:nth-child(7) > div:nth-child(2) > div > a > div > div";
+     "#page-wrapper > div:nth-child(7) > div:nth-child(2) > div > a > div > div";
 
     rachealBackOrderSelector =
       "#page-wrapper > div:nth-child(5) > div:nth-child(1) > div > a > div > div";
     rachealPendingSelector =
       "#page-wrapper > div:nth-child(5) > div:nth-child(2) > div > a > div > div";
-
+*/
     await self.page.waitForSelector("div.clearfix");
     var button = await self.page.$(backOrderSelector);
     await button.click();
@@ -77,7 +77,7 @@ const self = {
       await compare(item, modifiedOrders);
     }
     return list;
-  }
+  },
 };
 
 const displayHundred = async () => {
